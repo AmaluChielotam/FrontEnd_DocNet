@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "916289169703",
+    "project_id": "barzine-17238",
+    "storage_bucket": "barzine-17238.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916289169703:android:f7081be5e92ae16ff12102",
+        "android_client_info": {
+          "package_name": "com.example.flutterprojects"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCbF_ztebA4Xht6l5ycQ1JKzn4oeJ9OD4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
