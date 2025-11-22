@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterprojects/service/auth_service.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -23,22 +25,35 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void _signup() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+    if (!_formKey.currentState!.validate()) return;
 
-      // Simulate API call
-      await Future.delayed(Duration(seconds: 2));
+    setState(() {
+      _isLoading = true;
+    });
 
-      setState(() {
-        _isLoading = false;
-      });
+    final auth = AuthService();
 
-      // Navigate to OTP verification
-      Navigator.pushNamed(context, '/verify-otp', arguments: {
-        'email': _emailController.text,
-      });
+    final result = await auth.signup(
+      _emailController.text.trim(),
+      _passwordController.text.trim(),
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result["success"] == true) {
+      Navigator.pushNamed(
+        context,
+        '/verifyOtp',
+        arguments: {
+          "email": _emailController.text.trim(),
+        },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result["message"] ?? "Signup failed")),
+      );
     }
   }
 
@@ -52,17 +67,14 @@ class _SignupScreenState extends State<SignupScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back button
+              // Back Button
               IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: Icon(Icons.arrow_back, color: Color(0xFF2D5B8F)),
-                padding: EdgeInsets.zero,
-                alignment: Alignment.centerLeft,
               ),
 
               SizedBox(height: 40),
 
-              // Create account section
               Text(
                 'Create Account,',
                 style: TextStyle(
@@ -72,8 +84,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
               ),
               SizedBox(height: 8),
+
               Text(
-                'Sign up to join DoctorConnect community',
+                'Sign up to join DocNet community',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -82,12 +95,11 @@ class _SignupScreenState extends State<SignupScreen> {
 
               SizedBox(height: 40),
 
-              // Signup form
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Email field
+                    // EMAIL
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
@@ -95,20 +107,18 @@ class _SignupScreenState extends State<SignupScreen> {
                         prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF2D5B8F)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
                           borderSide: BorderSide(color: Color(0xFF2D5B8F), width: 2),
                         ),
                       ),
-                      keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your email';
                         }
                         if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-                          return 'Please enter a valid email';
+                          return 'Enter a valid email';
                         }
                         return null;
                       },
@@ -116,7 +126,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     SizedBox(height: 20),
 
-                    // Password field
+                    // PASSWORD
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
@@ -125,7 +135,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF2D5B8F)),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                            _obscurePassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
                             color: Colors.grey,
                           ),
                           onPressed: () {
@@ -136,7 +148,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -145,7 +156,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter your password';
+                          return 'Enter your password';
                         }
                         if (value.length < 6) {
                           return 'Password must be at least 6 characters';
@@ -156,7 +167,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     SizedBox(height: 20),
 
-                    // Confirm Password field
+                    // CONFIRM PASSWORD
                     TextFormField(
                       controller: _confirmPasswordController,
                       obscureText: _obscureConfirmPassword,
@@ -165,18 +176,20 @@ class _SignupScreenState extends State<SignupScreen> {
                         prefixIcon: Icon(Icons.lock_outline, color: Color(0xFF2D5B8F)),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                            _obscureConfirmPassword
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
                             color: Colors.grey,
                           ),
                           onPressed: () {
                             setState(() {
-                              _obscureConfirmPassword = !_obscureConfirmPassword;
+                              _obscureConfirmPassword =
+                              !_obscureConfirmPassword;
                             });
                           },
                         ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -185,7 +198,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please confirm your password';
+                          return 'Confirm your password';
                         }
                         if (value != _passwordController.text) {
                           return 'Passwords do not match';
@@ -196,26 +209,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     SizedBox(height: 32),
 
-                    // Terms and conditions
-                    Row(
-                      children: [
-                        Icon(Icons.info_outline, size: 16, color: Colors.grey),
-                        SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'By signing up, you agree to our Terms of Service and Privacy Policy',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    SizedBox(height: 24),
-
-                    // Sign up button
+                    // SIGNUP BUTTON
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -226,16 +220,11 @@ class _SignupScreenState extends State<SignupScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          elevation: 2,
                         ),
                         child: _isLoading
-                            ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                          ),
+                            ? CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation(Colors.white),
                         )
                             : Text(
                           'Create Account',
@@ -250,7 +239,6 @@ class _SignupScreenState extends State<SignupScreen> {
 
                     SizedBox(height: 32),
 
-                    // Sign in link
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

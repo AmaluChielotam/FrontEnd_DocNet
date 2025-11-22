@@ -4,9 +4,8 @@ import 'package:flutterprojects/screens/profile.dart';
 import 'package:flutterprojects/widgets/doctor_card.dart';
 import 'package:flutterprojects/widgets/speciality_chip.dart';
 import 'package:flutterprojects/widgets/post_card.dart';
-
-import 'message.dart'; // Make sure this file exists
-import 'network.dart'; // Make sure this file exists
+import 'message.dart';
+import 'network.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
       isOnline: true,
       experience: '15 years',
       isVerified: true,
-      location: 'Rochester, MN', // Fixed location
+      location: 'Rochester, MN',
       bio: 'Cardiologist specializing in minimally invasive procedures',
       connections: 342,
       skills: ['Echocardiography', 'Cardiac Catheterization', 'Patient Care'],
@@ -43,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
       isOnline: false,
       experience: '12 years',
       isVerified: true,
-      location: 'Baltimore, MD', // Fixed location
+      location: 'Baltimore, MD',
       bio: 'Neurologist with focus on migraine treatments and research',
       connections: 287,
       skills: ['EEG Interpretation', 'Migraine Management', 'Clinical Research'],
@@ -136,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
   AppBar _buildHomeAppBar() {
     return AppBar(
       title: Text(
-        'DoctorConnect',
+        'DocNet',
         style: TextStyle(
           color: Color(0xFF2D5B8F),
           fontWeight: FontWeight.bold,

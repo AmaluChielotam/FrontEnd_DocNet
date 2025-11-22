@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterprojects/service/auth_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   @override
@@ -16,23 +17,28 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  void _sendResetLink() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+  Future<void> _sendResetLink() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      // Simulate API call
-      await Future.delayed(Duration(seconds: 2));
+    setState(() {
+      _isLoading = true;
+    });
 
-      setState(() {
-        _isLoading = false;
-      });
+    final auth = AuthService();
+    final result = await auth.sendResetPasswordOtp(_emailController.text.trim());
 
-      // Navigate to reset password OTP verification
+    setState(() {
+      _isLoading = false;
+    });
+
+    if (result['success'] == true) {
       Navigator.pushNamed(context, '/verify-reset-password', arguments: {
-        'email': _emailController.text,
+        'email': _emailController.text.trim(),
       });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result['message'] ?? 'Failed to send OTP')),
+      );
     }
   }
 
@@ -46,17 +52,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Back button
               IconButton(
                 onPressed: () => Navigator.pop(context),
                 icon: Icon(Icons.arrow_back, color: Color(0xFF2D5B8F)),
                 padding: EdgeInsets.zero,
                 alignment: Alignment.centerLeft,
               ),
-
               SizedBox(height: 40),
-
-              // Forgot password section
               Text(
                 'Forgot Password',
                 style: TextStyle(
@@ -68,49 +70,32 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               SizedBox(height: 8),
               Text(
                 'Enter your email address to receive a password reset OTP',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
-
               SizedBox(height: 40),
-
-              // Email form
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Email field
                     TextFormField(
                       controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
                       decoration: InputDecoration(
                         labelText: 'Email Address',
                         prefixIcon: Icon(Icons.email_outlined, color: Color(0xFF2D5B8F)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Color(0xFF2D5B8F), width: 2),
                         ),
                       ),
-                      keyboardType: TextInputType.emailAddress,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
+                        if (value == null || value.isEmpty) return 'Please enter your email';
                         if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                           return 'Please enter a valid email';
                         }
                         return null;
                       },
                     ),
-
                     SizedBox(height: 32),
-
-                    // Send reset link button
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -121,17 +106,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          elevation: 2,
                         ),
                         child: _isLoading
-                            ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation(Colors.white),
-                          ),
-                        )
+                            ? CircularProgressIndicator(color: Colors.white)
                             : Text(
                           'Send Reset OTP',
                           style: TextStyle(
@@ -142,15 +119,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 24),
-
-                    // Back to login
                     Center(
                       child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacementNamed(context, '/login');
-                        },
+                        onTap: () => Navigator.pushReplacementNamed(context, '/login'),
                         child: Text(
                           'Back to Sign In',
                           style: TextStyle(

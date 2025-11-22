@@ -37,7 +37,7 @@ class DoctorConnectApp extends StatelessWidget {
           ),
         ),
       ),
-      home: ChatScreen(conversation: conversation),
+      home: LoginScreen(),
       debugShowCheckedModeBanner: false,
       routes: {
         '/login': (context) => LoginScreen(),

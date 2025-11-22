@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterprojects/service/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -68,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               SizedBox(height: 8),
               Text(
-                'Sign in to continue to DoctorConnect',
+                'Sign in to continue to DocNet',
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.grey[600],
@@ -172,7 +173,32 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _login,
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            setState(() {
+                              _isLoading = true;
+                            });
+
+                            final auth = AuthService();
+
+                            final result = await auth.login(
+                              _emailController.text.trim(),
+                              _passwordController.text.trim(),
+                            );
+
+                            setState(() {
+                              _isLoading = false;
+                            });
+
+                            if (result["success"] == true) {
+                              Navigator.pushNamed(context, '/verifyOtp');
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(result["message"] ?? "Login failed")),
+                              );
+                            }
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFF2D5B8F),
                           shape: RoundedRectangleBorder(
