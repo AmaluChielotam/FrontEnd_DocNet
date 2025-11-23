@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Welcome back, Dr. Smith!',
+                  'Welcome back, Dr. Charles!',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -230,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 16),
 
           SizedBox(
-            height: 180,
+            height: 200,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: _topDoctors.length,

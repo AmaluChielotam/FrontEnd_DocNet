@@ -4,7 +4,7 @@ import 'package:flutterprojects/model/doctor_model.dart';
 class ProfileScreen extends StatelessWidget {
   final Doctor currentUser = Doctor(
     id: '12',
-    name: 'Dr. Alex Thompson',
+    name: 'Dr. Charles Thompson',
     specialty: 'Internal Medicine',
     hospital: 'Massachusetts General Hospital',
     rating: 4.8,
